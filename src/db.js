@@ -16,6 +16,13 @@ db.serialize(() => {
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
+    db.run(`
+        CREATE TABLE IF NOT EXISTS user_state (
+            wa_id TEXT PRIMARY KEY,
+            stage TEXT DEFAULT 'inicio',
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
 });
 
 /**
@@ -60,7 +67,40 @@ function getHistory(waId, limit = 10) {
     });
 }
 
+/**
+ * Gets the current funnel stage of a user.
+ * @param {string} waId - The user's WhatsApp ID.
+ */
+function getStage(waId) {
+    return new Promise((resolve, reject) => {
+        db.get("SELECT stage FROM user_state WHERE wa_id = ?", [waId], (err, row) => {
+            if (err) return reject(err);
+            resolve(row ? row.stage : 'inicio');
+        });
+    });
+}
+
+/**
+ * Sets the funnel stage of a user.
+ * @param {string} waId - The user's WhatsApp ID.
+ * @param {string} stage - The new stage.
+ */
+function setStage(waId, stage) {
+    return new Promise((resolve, reject) => {
+        db.run(
+            "INSERT INTO user_state (wa_id, stage, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(wa_id) DO UPDATE SET stage = excluded.stage, updated_at = CURRENT_TIMESTAMP",
+            [waId, stage],
+            (err) => {
+                if (err) return reject(err);
+                resolve();
+            }
+        );
+    });
+}
+
 module.exports = {
     saveMessage,
-    getHistory
+    getHistory,
+    getStage,
+    setStage
 };

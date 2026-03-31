@@ -36,8 +36,8 @@ async function sendAudio(to, audioUrl) {
         const response = await axios.post(`${BASE_URL}/message/sendWhatsAppAudio/${INSTANCE}`, {
             number: to,
             audio: audioUrl,
-            delay: 1500, // Simulates recording time
-            encoding: true // Usually needed for WhatsApp to recognize it as PTT
+            delay: 1500,
+            encoding: true
         }, { headers });
         console.log('Audio sent to', to);
         return response.data;
@@ -48,9 +48,49 @@ async function sendAudio(to, audioUrl) {
 }
 
 /**
+ * Sends an image via Evolution API.
+ */
+async function sendImage(to, imageUrl, caption = '') {
+    try {
+        const response = await axios.post(`${BASE_URL}/message/sendMedia/${INSTANCE}`, {
+            number: to,
+            media: imageUrl,
+            mediatype: 'image',
+            mimetype: 'image/jpeg',
+            caption: caption
+        }, { headers });
+        console.log('Image sent to', to);
+        return response.data;
+    } catch (error) {
+        console.error('Error sending image:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+/**
+ * Sends a video via Evolution API.
+ */
+async function sendVideo(to, videoUrl, caption = '') {
+    try {
+        const response = await axios.post(`${BASE_URL}/message/sendMedia/${INSTANCE}`, {
+            number: to,
+            media: videoUrl,
+            mediatype: 'video',
+            mimetype: 'video/mp4',
+            caption: caption
+        }, { headers });
+        console.log('Video sent to', to);
+        return response.data;
+    } catch (error) {
+        console.error('Error sending video:', error.response?.data || error.message);
+        throw error;
+    }
+}
+
+/**
  * Sends a PDF document via Evolution API.
  */
-async function sendPDF(to, pdfUrl, fileName = 'Material.pdf', captionText = 'Aqui está o material solicitado!') {
+async function sendPDF(to, pdfUrl, fileName = 'Material.pdf', captionText = '') {
     try {
         const response = await axios.post(`${BASE_URL}/message/sendMedia/${INSTANCE}`, {
             number: to,
@@ -68,17 +108,10 @@ async function sendPDF(to, pdfUrl, fileName = 'Material.pdf', captionText = 'Aqu
     }
 }
 
-/**
- * Sends a payment link (via text message).
- */
-async function sendPaymentLink(to, link) {
-    const text = `Perfeito! Aqui está o seu link de pagamento seguro para finalizar a compra:\n\n${link}\n\nObrigado pela sua preferência!`;
-    return sendText(to, text);
-}
-
 module.exports = {
     sendText,
     sendAudio,
-    sendPDF,
-    sendPaymentLink
+    sendImage,
+    sendVideo,
+    sendPDF
 };

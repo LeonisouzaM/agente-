@@ -43,13 +43,8 @@ app.post('/webhook', async (req, res) => {
             if (textMessage) {
                 console.log(`[Mensagem] De: ${senderName} (${waId}): ${textMessage}`);
                 
-                // Obtenha a resposta da IA
-                const aiResponse = await processChatMessage(waId, senderName, textMessage);
-                
-                // Envie a resposta de volta se houver texto (e não for só tool call)
-                if (aiResponse) {
-                    await evolution.sendText(waId, aiResponse);
-                }
+                // O aiService cuida de todo o envio internamente (mensagens, áudios, PDFs, imagens)
+                await processChatMessage(waId, senderName, textMessage);
             }
         }
 
