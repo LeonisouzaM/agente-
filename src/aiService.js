@@ -1,5 +1,6 @@
 const db = require('./db');
 const evolution = require('./evolutionService');
+const pixel = require('./pixelService');
 require('dotenv').config();
 
 // ──────────────────────────────────────────────
@@ -65,6 +66,9 @@ function scheduleFollowUp(waId) {
 //  ETAPA 1 — Saudação inicial
 // ──────────────────────────────────────────────
 async function etapa1_saudacao(waId) {
+    // 📊 Pixel: Lead — novo contato entrou no funil
+    pixel.trackLead(waId).catch(e => console.error('[Pixel] Lead:', e));
+
     const msg = '✨ Oii, amada tudo bem?! Sou a Laura, e fico feliz em saber que você quer conhecer nossas deliciosas receitas!';
     await evolution.sendText(waId, msg);
     await sleep(2000);
@@ -230,6 +234,8 @@ async function processChatMessage(waId, senderName, textContent) {
         if (pagouKeywords.some(k => lower.includes(k))) {
             cancelFollowUp(waId);
             await db.setStage(waId, 'pago');
+            // 📊 Pixel: Purchase — pagamento confirmado
+            pixel.trackPurchase(waId, 10.99).catch(e => console.error('[Pixel] Purchase:', e));
             await evolution.sendText(waId, '💚 Muito obrigada, amada! Recebi com muito carinho! Que essas receitas tragam muito sucesso para você! 🍰✨');
         } else {
             // Outra mensagem qualquer enquanto aguarda pagamento — apenas reforça o PIX

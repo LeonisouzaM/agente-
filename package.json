@@ -17,6 +17,7 @@
     "body-parser": "^2.2.2",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "facebook-nodejs-business-sdk": "^24.0.1",
     "groq-sdk": "^1.1.2",
     "sqlite3": "^6.0.1"
   }
