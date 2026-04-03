@@ -67,7 +67,9 @@ function scheduleFollowUp(waId) {
 async function etapa1_saudacao(waId) {
     const msg = '✨ Oii, amada tudo bem?! Sou a Laura, e fico feliz em saber que você quer conhecer nossas deliciosas receitas!';
     await evolution.sendText(waId, msg);
-    await db.setStage(waId, 'aguardando_confirmacao_audio');
+    await sleep(2000);
+    // Avança automaticamente para a proposta sem precisar que o cliente responda
+    await etapa2_proposta(waId);
 }
 
 // ──────────────────────────────────────────────
@@ -203,9 +205,8 @@ async function processChatMessage(waId, senderName, textContent) {
     }
 
     // == AGUARDANDO CONFIRMAÇÃO PARA OUVIR O ÁUDIO ==
+    // (Esse stage não é mais usado — a etapa2 é disparada automaticamente após a saudação)
     if (stage === 'aguardando_confirmacao_audio') {
-        // Qualquer resposta (positiva ou não) avança para a proposta
-        // pois é a primeira interação após a saudação
         await etapa2_proposta(waId);
         return;
     }
