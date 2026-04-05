@@ -69,7 +69,7 @@ async function etapa1_saudacao(waId) {
     // 📊 Pixel: Lead — novo contato entrou no funil
     pixel.trackLead(waId).catch(e => console.error('[Pixel] Lead:', e));
 
-    const msg = '✨ Oii, amada tudo bem?! Sou a Laura, e fico feliz em saber que você quer conhecer nossas deliciosas receitas!';
+    const msg = '✨ Oii, amada tudo bem?! Sou a Natalia, e fico feliz em saber que você quer conhecer nossas deliciosas receitas!';
     await evolution.sendText(waId, msg);
     await sleep(2000);
     // Avança automaticamente para a proposta sem precisar que o cliente responda
